@@ -1,0 +1,48 @@
+#%RAML 1.0
+title: sys-starwars-api
+description: Search for Star Wars characters based on name and optionally height
+version: 1
+baseUri: http://localhost:8081/sys-starwars/v1/api
+mediaType:
+  - application/json
+protocols:
+  - HTTPS
+uses:
+  restful-common: ./exchange_modules/restful_common/library.raml
+types:
+  Person: !include ./data_types/person.raml
+/people:
+  type: 
+    restful-common.Search:
+      resourceName: Person
+      resourceType: Person
+  get:
+    queryParameters:
+      name:
+        type: string 
+        description: The partial to full name of a person or persons
+        example: Example
+      height.eq?:
+        type: number
+        format: int
+        description: The exact height of a person or persons. If eq is passed in, gt and lt will be ignored
+        example: 163
+      height.gt?:
+        type: number
+        format: int
+        description: The lower bound for the height of a person or persons. If lt is also passed in, lt must be greater than gt.
+        example: 160
+      height.lt?:
+        type: number
+        format: int
+        description: The upper bound for the height of a person or persons. If gt is also passed in, gt must be less than lt.
+        example: 170
+    responses:
+      "200":
+        body:
+          properties:
+            count:
+              type: number
+              format: int
+              description: number of persons found
+              example: 1

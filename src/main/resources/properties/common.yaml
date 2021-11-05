@@ -1,0 +1,12 @@
+### DO NOT EDIT project.artifactId and project.version. To be replaced by Maven build ###
+   
+# Application Details    
+application:
+  name: "${project.artifactId}"
+  version: "${project.version}"
+api:
+  name: "${root}"
+  version: "v1"
+  basePath: "/${api.version}/api"
+  mainListenerPath: "${api.name}${api.basePath}/*"
+  consoleListenerPath: "${api.name}/console/*"

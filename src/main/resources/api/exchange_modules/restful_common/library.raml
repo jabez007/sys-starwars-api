@@ -1,0 +1,56 @@
+#%RAML 1.0 Library
+resourceTypes:
+  _Collection: !include ./resource_types/_collection.raml 
+  Search: 
+    type:
+      _Collection:
+        resourceName: <<resourceName>>
+        resourceType: <<resourceType>>
+    get:
+  Create: 
+    type:
+      _Collection:
+        resourceName: <<resourceName>>
+        resourceType: <<resourceType>>
+    post:
+  Search_Create:
+    type:
+      _Collection:
+        resourceName: <<resourceName>>
+        resourceType: <<resourceType>>
+    get:
+    post:
+  _Item: !include ./resource_types/_item.raml
+  Read:
+    type:
+      _Item:
+        resourceName: <<resourceName>>
+        resourceType: <<resourceType>>
+    get:
+  Update:
+    type:
+      _Item:
+        resourceName: <<resourceName>>
+        resourceType: <<resourceType>>
+    put:
+  Read_Update: 
+    type:
+      _Item:
+        resourceName: <<resourceName>>
+        resourceType: <<resourceType>>
+    get:
+    put:
+  Delete:
+    type:
+      _Item:
+        resourceName: <<resourceName>>
+        resourceType: <<resourceType>>
+    delete:
+  Read_Update_Delete:
+    type:
+      _Item:
+        resourceName: <<resourceName>>
+        resourceType: <<resourceType>>
+    get:
+    put:
+    delete:

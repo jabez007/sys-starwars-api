@@ -1,0 +1,16 @@
+#%RAML 1.0 ResourceType
+get?:
+  displayName: Search for <<resourceName | !pluralize | !uppercamelcase>>
+  responses:
+    "200":
+      body:
+        properties:
+          found:
+            items:
+              type: <<resourceType>>
+post?:
+  displayName: Create <<resourceName | !singularize | !uppercamelcase>>
+  body:
+    type: <<resourceType>>
+  responses:
+    "201": {}

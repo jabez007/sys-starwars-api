@@ -1,0 +1,23 @@
+#%RAML 1.0 ResourceType
+get?:
+  displayName: Read <<resourceName | !singularize | !uppercamelcase>>
+  responses:
+    "200":
+      body:
+        type: <<resourceType>>
+put?:
+  displayName: Update <<resourceName | !singularize | !uppercamelcase>>
+  body:
+    type: <<resourceType>>
+  responses:
+    "204": {}
+    "412":
+      description: Precondition Failed
+      body:
+        properties:
+          message:
+            type: string
+delete?:
+  displayName: Delete <<resourceName | !singularize | !uppercamelcase>>
+  responses:
+    "204": {}
