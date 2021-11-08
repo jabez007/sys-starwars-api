@@ -123,7 +123,4 @@ output application/json
             </on-error-propagate>
         </error-handler>
     </flow>
-    <flow name="get:\people:sys-starwars-api-config">
-        <logger level="INFO" message="get:\people:sys-starwars-api-config" />
-    </flow>
 </mule>

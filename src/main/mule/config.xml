@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
 	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 	<configuration-properties
 		doc:name="Configuration properties"
 		doc:id="7c69ad0f-0f50-46aa-9468-c49c58d02c91"
@@ -14,4 +17,12 @@
 		doc:id="48b605d4-276e-4189-ac47-b250b0ddc02f"
 		file="properties/common.yaml"
 		doc:description="Properties Common to ALL Environments" />
+	<http:request-config
+		name="StarWars_HTTP_Request_configuration"
+		doc:name="HTTP Request configuration"
+		doc:id="ebb08822-129c-4ff5-9d9d-c92bf35f35d8" basePath="${starWars.basePath}"
+		requestStreamingMode="NEVER">
+		<http:request-connection protocol="${starWars.protocol}"
+			host="${starWars.host}" port="${starWars.port}" />
+	</http:request-config>
 </mule>

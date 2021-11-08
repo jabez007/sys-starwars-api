@@ -18,7 +18,12 @@ types:
       resourceType: Person
   get:
     queryParameters:
-      name:
+      page?:
+        type: number
+        format: int
+        minimum: 1
+        example: 2
+      name?:
         type: string 
         description: The partial to full name of a person or persons
         example: Example
@@ -42,7 +47,15 @@ types:
         body:
           properties:
             count:
+              description: number of persons found
               type: number
               format: int
-              description: number of persons found
               example: 1
+            next:
+              description: URL for next page of results
+              type: !include ./data_types/url.raml
+              example: http://127.0.0.1:8081/sys-starwars/v1/api/people?page=3
+            previous:
+              description: URL for previous page of results
+              type: !include ./data_types/url.raml
+              example: http://127.0.0.1:8081/sys-starwars/v1/api/people?page=1

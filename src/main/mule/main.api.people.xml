@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="get:\people:sys-starwars-api-config">
+		<set-variable value="#[attributes.queryParams]" doc:name="queryParams" doc:id="e19ac5db-efcc-4463-8b59-10bd08c72189" variableName="queryParams"/>
+		<logger level="INFO"
+			message="get:\people:sys-starwars-api-config" />
+		<flow-ref doc:name="People Search" doc:id="e55e1117-7f0c-44d4-8991-7b9fcda7fa99" name="api.people.searchFlow"/>
+	
+</flow>
+</mule>

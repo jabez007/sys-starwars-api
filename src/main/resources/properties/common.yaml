@@ -10,3 +10,10 @@ api:
   basePath: "/${api.version}/api"
   mainListenerPath: "${api.name}${api.basePath}/*"
   consoleListenerPath: "${api.name}/console/*"
+
+starWars:
+  basePath: "/api"
+  protocol: "HTTPS"
+  host: "swapi.dev"
+  port: "443"
+  

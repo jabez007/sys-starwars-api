@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="api.people.searchFlow" doc:id="e3b9cf87-dc66-4e32-b561-b8e6d98bc9fb" >
+		<http:request method="GET" doc:name="Search Starwars for People" doc:id="df59c8ae-8ff9-41f8-b56b-71850cdd2490" config-ref="StarWars_HTTP_Request_configuration" path="/people">
+			<http:query-params ><![CDATA[#[{
+	search: attributes.queryParams.name,
+	page: attributes.queryParams.page
+} filterObject (not isEmpty($))]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="Rename results to found" doc:id="1d5d9244-5d42-42ca-a41d-4fa009cc3761" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+(payload ++ {
+	found: payload.results
+}) -- [
+	'results'
+]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Filter found" doc:id="8952b610-a993-429d-9b3c-d99ad8cb329c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+
+var heightEq = vars.queryParams.'height.eq'
+var heightGt = vars.queryParams.'height.gt'
+var heightLt = vars.queryParams.'height.lt'
+
+output application/java
+---
+payload update {
+	case .found -> $ filter (f) -> do {
+		var fHeight = f.height as Number
+		---
+		if (not isEmpty(heightEq))
+			fHeight == heightEq
+		else (
+			(fHeight >= (heightGt default 0))
+			and (
+				if (not isEmpty(heightLt))
+					fHeight <= heightLt
+				else
+					true
+			)
+		)	
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Update count" doc:id="62c5237a-add3-48ee-a17d-5d3db2bb0d05" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload update {
+	case .count -> sizeOf(payload.found)
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Update page URLs" doc:id="f5b0c7b0-0f52-4684-a3af-c4ad09f24167">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+
+fun parsePageNumber(fromUrl: String): String | Null = 
+	(fromUrl match /.*\?.*page=(\d+)/)[1]	
+
+fun buildQueryParams(backendUrl: String): String = (
+	((vars.queryParams default {}) update {
+		case .page! -> parsePageNumber(backendUrl)
+	} filterObject (not isEmpty($))) pluck (value, key) -> "$(key)=$(value)"
+) joinBy "&"
+
+fun proxyUrl(backendUrl: Null): Null = null
+fun proxyUrl(backendUrl: String | Null): String =
+	"$(Mule::p('api.protocol'))://$(Mule::p('api.host')):$(Mule::p('api.port'))/$(Mule::p('api.name'))$(Mule::p('api.basePath'))/people?$(buildQueryParams(backendUrl))"
+
+output application/java
+---
+payload update {
+	case .next -> proxyUrl($)
+	case .previous -> proxyUrl($)
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="toJSON" doc:id="4785d547-93d5-4fc1-809a-7b9c0348447b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+</mule>
