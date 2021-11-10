@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<munit:config name="main.api.people-test-suite.xml" />
+	<munit:test name="main.api.people-test-suite-get:\people:sys-starwars-api-configTestNameSearch" doc:id="ade100bc-4edb-46d2-833f-ad2e637f9032" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock swapi people endpoint when testing" doc:id="7b2d2f4d-2f1f-438c-8f99-68b7e02128b7" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="StarWars_HTTP_Request_configuration" attributeName="config-ref" />
+					<munit-tools:with-attribute whereValue="/people" attributeName="path" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('mockResponses/skywalkers.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<ee:transform doc:name="name=Skywalker" doc:id="38632f5b-388f-4ba8-aa5b-af74826a4ce7" >
+				<ee:message >
+					<ee:set-attributes ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	queryParams: {
+		name: "Skywalker"
+	}
+}]]></ee:set-attributes>
+				</ee:message>
+			</ee:transform>
+			<flow-ref doc:name="Flow-ref to get:\people:sys-starwars-api-config" doc:id="dffd83c2-f1a6-485d-a56a-0acce0d1e16c" name="get:\people:sys-starwars-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="found array has 3 people" doc:id="d7f4215b-6c81-4305-b1a2-f24286e1d97e" message="found array does not have 3 people" expression="#[sizeOf(payload.found)]" is="#[MunitTools::equalTo(3)]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="main.api.people-test-suite-get:\people:sys-starwars-api-configTestHeightEqSearch" doc:id="e2694105-3863-40ae-8550-3fc487123271" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock swapi people endpoint when testing" doc:id="4a1d6471-1648-441c-b8ac-ea060eb9db07" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="StarWars_HTTP_Request_configuration" attributeName="config-ref" />
+					<munit-tools:with-attribute whereValue="/people" attributeName="path" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('mockResponses/peoplePage1.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:spy doc:name="Update count" doc:id="9887573f-6d2e-4c19-8de5-49f007163c2b" processor="ee:transform">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Update count" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<munit-tools:assert-that doc:name="count is 82" doc:id="d0b4f529-8907-490f-a647-79400dfbbc23" is="#[MunitTools::equalTo(82)]" message="count is not 82" expression="#[payload.count]"/>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<munit-tools:assert-that doc:name="count is 1" doc:id="343f1607-2f52-4069-8c93-5fec66d721a3" message="count is not 1" expression="#[payload.count]" is="#[MunitTools::equalTo(1)]" />
+				</munit-tools:after-call>
+			</munit-tools:spy>
+</munit:behavior>
+		<munit:execution >
+			<ee:transform doc:name="height.eq=172" doc:id="d5ac0d17-99e8-462f-b64d-0d3568ebeef5" >
+				<ee:message >
+					<ee:set-attributes ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	queryParams: {
+		"height.eq": 172
+	}
+}]]></ee:set-attributes>
+				</ee:message>
+			</ee:transform>
+			<flow-ref doc:name="Flow-ref to get:\people:sys-starwars-api-config" doc:id="95698c55-44cd-4cdc-bbbb-46b4e1dd82b9" name="get:\people:sys-starwars-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="found array has 1 person" doc:id="dfa414e1-1503-4cb7-81b0-8c342d8e0319" message="found array does not have 1 person" expression="#[sizeOf(payload.found)]" is="#[MunitTools::equalTo(1)]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="main.api.people-test-suite-get:\people:sys-starwars-api-configTestHeightGtSearch" doc:id="3810338f-54ad-4580-9b4b-ec9904c18cd9" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock swapi people endpoint when testing" doc:id="3a2cb758-ced0-4db0-b6d3-05a1e3a69aed" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="StarWars_HTTP_Request_configuration" attributeName="config-ref" />
+					<munit-tools:with-attribute whereValue="/people" attributeName="path" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('mockResponses/peoplePage1.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:spy doc:name="Update count" doc:id="73871e1b-745a-49ac-aa9c-b727ea58aede" processor="ee:transform">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Update count" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<munit-tools:assert-that doc:name="count is 82" doc:id="24b4adc4-2495-40d1-b4b8-142f33cc27e8" is="#[MunitTools::equalTo(82)]" message="count is not 82" expression="#[payload.count]"/>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<munit-tools:assert-that doc:name="count is 5" doc:id="1736fddc-52cf-4241-a9ee-185a6a841d6a" message="count is not 5" expression="#[payload.count]" is="#[MunitTools::equalTo(5)]" />
+				</munit-tools:after-call>
+			</munit-tools:spy>
+		</munit:behavior>
+		<munit:execution >
+			<ee:transform doc:name="height.gt=172" doc:id="a24ab2a3-1972-40ba-a61d-cbac6e4c2693" >
+				<ee:message >
+					<ee:set-attributes ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	queryParams: {
+		"height.gt": 172
+	}
+}]]></ee:set-attributes>
+				</ee:message>
+			</ee:transform>
+			<flow-ref doc:name="Flow-ref to get:\people:sys-starwars-api-config" doc:id="656a052d-420f-428b-a92d-511041aac447" name="get:\people:sys-starwars-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="found array has 5 people" doc:id="9635ea4c-c618-4109-8d4a-69b912af3e07" message="found array does not have 5 people" expression="#[sizeOf(payload.found)]" is="#[MunitTools::equalTo(5)]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="main.api.people-test-suite-get:\people:sys-starwars-api-configTestHeightLtSearch" doc:id="55389126-e71f-498d-8c54-b408301e89d4" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock swapi people endpoint when testing" doc:id="b1baad5a-63e8-49ea-8a6c-3aeaa41c7b16" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="StarWars_HTTP_Request_configuration" attributeName="config-ref" />
+					<munit-tools:with-attribute whereValue="/people" attributeName="path" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('mockResponses/peoplePage1.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:spy doc:name="Update count" doc:id="54a609dd-7a9c-4df5-8cf3-78a7a6511555" processor="ee:transform">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Update count" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<munit-tools:assert-that doc:name="count is 82" doc:id="6a48b069-b9dd-4113-b81c-103c18e6ac1b" is="#[MunitTools::equalTo(82)]" message="count is not 82" expression="#[payload.count]"/>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<munit-tools:assert-that doc:name="count is 6" doc:id="7568f8ba-e1a9-492b-a153-8f9ae91d9a42" message="count is not 6" expression="#[payload.count]" is="#[MunitTools::equalTo(6)]" />
+				</munit-tools:after-call>
+			</munit-tools:spy>
+		</munit:behavior>
+		<munit:execution >
+			<ee:transform doc:name="height.lt=172" doc:id="91a72516-5989-4f7e-a2e8-d498994c2bc1" >
+				<ee:message >
+					<ee:set-attributes ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	queryParams: {
+		"height.lt": 172
+	}
+}]]></ee:set-attributes>
+				</ee:message>
+			</ee:transform>
+			<flow-ref doc:name="Flow-ref to get:\people:sys-starwars-api-config" doc:id="fce41006-8bbd-48b5-821e-f883912fe3e5" name="get:\people:sys-starwars-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="found array has 6 people" doc:id="55264b82-97dc-4f4a-90a1-fb948cce1067" message="found array does not have 6 people" expression="#[sizeOf(payload.found)]" is="#[MunitTools::equalTo(6)]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="main.api.people-test-suite-get:\people:sys-starwars-api-configTestHeightGtLtSearch" doc:id="481f4817-b5d5-4ccf-91f1-c48381c1f10e" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock swapi people endpoint when testing" doc:id="647d4177-9d45-40ff-a52e-0d1d6811f81b" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="StarWars_HTTP_Request_configuration" attributeName="config-ref" />
+					<munit-tools:with-attribute whereValue="/people" attributeName="path" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('mockResponses/peoplePage1.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:spy doc:name="Update count" doc:id="531ce269-7738-49c2-bddf-e122c989b8bc" processor="ee:transform">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Update count" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<munit-tools:assert-that doc:name="count is 82" doc:id="b54fc538-6405-42fb-9498-7d0197e1ecf0" is="#[MunitTools::equalTo(82)]" message="count is not 82" expression="#[payload.count]"/>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<munit-tools:assert-that doc:name="count is 7" doc:id="ee27863d-5276-4058-b342-09c58e8832a8" message="count is not 7" expression="#[payload.count]" is="#[MunitTools::equalTo(7)]" />
+				</munit-tools:after-call>
+			</munit-tools:spy>
+		</munit:behavior>
+		<munit:execution >
+			<ee:transform doc:name="height.gt=100 and height.lt=200" doc:id="71bb6c12-538f-46a3-96dd-4a750106d00b" >
+				<ee:message >
+					<ee:set-attributes ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	queryParams: {
+		"height.gt": 100,
+		"height.lt": 200
+	}
+}]]></ee:set-attributes>
+				</ee:message>
+			</ee:transform>
+			<flow-ref doc:name="Flow-ref to get:\people:sys-starwars-api-config" doc:id="f70077ee-15a3-42c7-bffa-d29f869951fd" name="get:\people:sys-starwars-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="found array has 7 people" doc:id="68c9cddf-8378-46d1-b63f-da7d3ca92730" message="found array does not have 7 people" expression="#[sizeOf(payload.found)]" is="#[MunitTools::equalTo(7)]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="main.api.people-test-suite-get:\people:sys-starwars-api-configTestHeightLtGtSearch" doc:id="2ad52f23-066c-424f-a11e-b97972ad559f" description="Test">
+		<munit:execution >
+			<ee:transform doc:name="height.gt=200 and height.lt=100" doc:id="f2aa4f44-9ec2-48f3-9071-c70049af4734" >
+				<ee:message >
+					<ee:set-attributes ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	queryParams: {
+		"height.gt": 200,
+		"height.lt": 100
+	}
+}]]></ee:set-attributes>
+				</ee:message>
+			</ee:transform>
+			<flow-ref doc:name="Flow-ref to get:\people:sys-starwars-api-config" doc:id="a77df329-e8e8-45e0-b560-e914b61bd5cb" name="get:\people:sys-starwars-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Bad request returned" doc:id="3713cd9f-10b3-4f41-8901-933ffa83da31" message="Bad request not returned" expression="#[vars.httpStatus]" is="#[MunitTools::equalTo(400)]"/>
+		</munit:validation>
+	</munit:test>
+</mule>
