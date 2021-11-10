@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
 	xmlns="http://www.mulesoft.org/schema/mule/core"
 	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
@@ -17,6 +16,11 @@ http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/cor
 		doc:id="48b605d4-276e-4189-ac47-b250b0ddc02f"
 		file="properties/common.yaml"
 		doc:description="Properties Common to ALL Environments" />
+	<http:listener-config
+		name="sys-starwars-api-httpListenerConfig">
+		<http:listener-connection host="0.0.0.0"
+			port="8081" />
+	</http:listener-config>
 	<http:request-config
 		name="StarWars_HTTP_Request_configuration"
 		doc:name="HTTP Request configuration"

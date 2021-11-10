@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<sub-flow name="health-check-subflow">
+		<logger doc:name="Log Start"
+			doc:id="cb4a1ab1-952f-4a34-bb39-3a5c5e41ab9b" level="INFO"
+			message="Start health-check-subflow"
+			category="${application.logger.category}" />
+		<ee:transform doc:name="set basic response payload">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+   appName: Mule::p('api.name'),
+   appVersion: Mule::p('api.version'),
+   assetVersion: Mule::p('application.version'),
+   appStatus: "RUNNING",
+   timestamp: now() as String {format: "yyyy-MM-dd'T'HH:mm:ss.SSS z"}
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+		<choice doc:name="mode?">
+            <when expression='#[attributes.queryParams.mode == "verbose"]'>
+                <ee:transform doc:name="set verbose response payload">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload ++ {
+    appProperties: {
+        deployedAppName: app.name,
+        muleVersion: mule.version,
+        encoding: app.encoding,
+        standalone: app.standalone,
+        workDir: app.workDir,
+        listeningHost: attributes.headers.host default ''
+    },
+    reservedProperties: {
+        javaVendor: Mule::p("java.vendor"),
+        javaName: Mule::p("java.runtime.name"),
+        javaVersion: Mule::p("java.version"),
+        orgId: Mule::p("csorganization.id"),
+        envId: Mule::p("environment.id"),
+        envType: Mule::p("environment.type"),
+        workerId: Mule::p("worker.id"),
+        domain: Mule::p("domain"),
+        fullDomain: Mule::p("fullDomain"),
+        region: Mule::p("application.aws.region"),
+        httpPort: Mule::p("http.port"),
+        httpsPort: Mule::p("https.port"),
+        httpPrivatePort: Mule::p("http.private.port"),
+        httpsPrivatePort: Mule::p("https.private.port"),
+        muleHome: Mule::p("mule.home")
+    },
+    serverProperties: {
+        time: now() as String {format: "yyyy-MM-dd'T'HH:mm:ss.SSSZ"} ,
+        host: server.host,
+        ipAddr: server.ip,
+        javaVendor: server.javaVendor,
+        javaVersion: server.javaVersion,
+        osArch: server.osArch,
+        osName: server.osName,
+        osVersion: server.osVersion,
+        fileSeparator: server.fileSeparator,
+        tmpDir: server.tmpDir,
+        userDir: server.userDir,
+        userHome: server.userHome,
+        userName: server.userName,
+    }
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </when>
+        </choice>
+        <logger doc:name="Log End"
+			doc:id="3fa9920b-0982-4e04-86e6-347a8315b4fc" level="INFO"
+			message="End health-check-subflow"
+			category="${application.logger.category}" />
+    </sub-flow>
+    <flow name="get:\ping">
+        <http:listener doc:name="Listener"
+            config-ref="sys-starwars-api-httpListenerConfig" 
+            path='${api.pingListenerPath}' />
+        <flow-ref doc:name="health-check-subflow" name="health-check-subflow" />
+    </flow>
+</mule>

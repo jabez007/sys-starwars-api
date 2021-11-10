@@ -80,6 +80,7 @@
 						</formats>
 						<ignoreFiles>
 							<ignoreFile>main.xml</ignoreFile>
+							<ignoreFile>ping.xml</ignoreFile>
 						</ignoreFiles>
 					</coverage>
 				</configuration>

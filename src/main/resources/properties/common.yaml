@@ -4,12 +4,16 @@
 application:
   name: "${project.artifactId}"
   version: "${project.version}"
+  logger:
+    category: "${project.groupId}.mule.${application.name}"
+  
 api:
   name: "${root}"
   version: "v1"
   basePath: "/${api.version}/api"
   mainListenerPath: "${api.name}${api.basePath}/*"
   consoleListenerPath: "${api.name}/console/*"
+  pingListenerPath: "${api.name}/ping/*"
 
 starWars:
   basePath: "/api"
