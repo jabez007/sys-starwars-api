@@ -7,9 +7,29 @@
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<flow name="get:\people:sys-starwars-api-config">
 		<set-variable value="#[attributes.queryParams]" doc:name="queryParams" doc:id="e19ac5db-efcc-4463-8b59-10bd08c72189" variableName="queryParams"/>
-		<logger level="INFO"
-			message="get:\people:sys-starwars-api-config" />
-		<flow-ref doc:name="People Search" doc:id="e55e1117-7f0c-44d4-8991-7b9fcda7fa99" name="api.people.searchFlow"/>
+		<logger level="INFO" message="get:\people:sys-starwars-api-config" />
+		<choice doc:name="Choice" doc:id="a05ce681-a7fa-4529-8569-3d447b3b130f" >
+			<when expression="#[isEmpty(vars.queryParams.'height.eq')
+and
+(not (isEmpty(vars.queryParams.'height.gt') or isEmpty(vars.queryParams.'height.lt')))
+and
+(vars.queryParams.'height.gt' &gt;= vars.queryParams.'height.lt')]">
+				<ee:transform doc:name="Bad Request" doc:id="5bf21402-5022-4a5d-adbc-6fe0c4943cf8" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Bad request"}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[400]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<flow-ref doc:name="People Search" doc:id="e55e1117-7f0c-44d4-8991-7b9fcda7fa99" name="api.people.searchFlow" />
+			</otherwise>
+		</choice>
 	
 </flow>
 </mule>
