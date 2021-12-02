@@ -1,0 +1,101 @@
+{
+	"info": {
+		"_postman_id": "8d4d9601-28f4-4503-869c-eb657e4ca628",
+		"name": "sys-starwars-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Search for People",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{protocol}}://{{hostname}}:{{port}}{{basepath}}/people",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{hostname}}"
+					],
+					"port": "{{port}}{{basepath}}",
+					"path": [
+						"people"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": null,
+							"description": "The partial to full name of a person or persons",
+							"disabled": true
+						},
+						{
+							"key": "height.eq",
+							"value": null,
+							"description": "The exact height of a person or persons. If eq is passed in, gt and lt will be ignored",
+							"disabled": true
+						},
+						{
+							"key": "height.gt",
+							"value": null,
+							"description": "The lower bound for the height of a person or persons. If lt is also passed in, lt must be greater than gt.",
+							"disabled": true
+						},
+						{
+							"key": "height.lt",
+							"value": null,
+							"description": "The upper bound for the height of a person or persons. If gt is also passed in, gt must be less than lt.",
+							"disabled": true
+						},
+						{
+							"key": "page",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "protocol",
+			"value": "http"
+		},
+		{
+			"key": "hostname",
+			"value": "localhost"
+		},
+		{
+			"key": "port",
+			"value": "8081"
+		},
+		{
+			"key": "version",
+			"value": "v1"
+		},
+		{
+			"key": "basepath",
+			"value": "/sys-starwars/{{version}}/api"
+		}
+	]
+}
