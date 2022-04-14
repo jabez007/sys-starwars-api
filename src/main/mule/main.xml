@@ -8,7 +8,7 @@ http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/cor
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
 http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd ">
 	<apikit:config name="sys-starwars-api-config"
-		api="sys-starwars-api.raml" outboundHeadersMapName="outboundHeaders"
+		api="${api.raml}" outboundHeadersMapName="outboundHeaders"
 		httpStatusVarName="httpStatus" />
 	<flow name="sys-starwars-api-main">
 		<http:listener
